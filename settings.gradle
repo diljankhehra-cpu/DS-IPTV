@@ -1,0 +1,2 @@
+rootProject.name = "DSIPTV"
+include ':app'
