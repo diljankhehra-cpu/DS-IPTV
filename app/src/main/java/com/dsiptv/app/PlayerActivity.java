@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.view.ViewGroup.LayoutParams;
+import android.content.pm.ActivityInfo;
 
 import android.net.Uri;
 import java.util.List;
@@ -38,22 +39,21 @@ public class PlayerActivity extends Activity {
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
 
-        // 4️⃣ Playlist (dynamic or hardcoded)
+        // 4️⃣ Playlist URLs (hardcoded or via intent)
         List<String> playlist = Arrays.asList(
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
             "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
         );
 
-        // Optional: Get playlist from intent extra (if passed)
         List<String> intentPlaylist = getIntent().getStringArrayListExtra("playlist");
         if (intentPlaylist != null && !intentPlaylist.isEmpty()) {
             playlist = intentPlaylist;
         }
 
-        // 5️⃣ Add media items to player
+        // 5️⃣ Add media items
         for (String url : playlist) {
-            if (url == null || url.isEmpty()) continue; // skip invalid
+            if (url == null || url.isEmpty()) continue;
             MediaItem mediaItem = MediaItem.fromUri(Uri.parse(url));
             player.addMediaItem(mediaItem);
         }
@@ -61,7 +61,7 @@ public class PlayerActivity extends Activity {
         // 6️⃣ Loop playlist
         player.setRepeatMode(Player.REPEAT_MODE_ALL);
 
-        // 7️⃣ Prepare and start playback
+        // 7️⃣ Prepare and play
         player.prepare();
         player.play();
     }
