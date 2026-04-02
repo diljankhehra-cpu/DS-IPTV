@@ -5,109 +5,64 @@ import android.os.Bundle;
 import android.widget.*;
 import android.view.*;
 import android.graphics.*;
-import android.graphics.drawable.GradientDrawable;
-
-import android.hardware.camera2.CameraManager;
-import android.content.Context;
+import android.content.Intent;
 
 public class MainActivity extends Activity {
-
-    private boolean isOn = false;
-    private CameraManager cameraManager;
-    private String cameraId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // MAIN LAYOUT
-        LinearLayout main = new LinearLayout(this);
-        main.setOrientation(LinearLayout.VERTICAL);
-        main.setBackgroundColor(Color.BLACK);
-        main.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setBackgroundColor(Color.BLACK);
+        layout.setGravity(Gravity.CENTER);
 
-        // TITLE
+        // Loading text
+        TextView loading = new TextView(this);
+        loading.setText("Loading...");
+        loading.setTextColor(Color.WHITE);
+        loading.setTextSize(24);
+        layout.addView(loading);
+
+        setContentView(layout);
+
+        // Delay → show input screen
+        new android.os.Handler().postDelayed(() -> {
+            showInputScreen();
+        }, 2000);
+    }
+
+    private void showInputScreen() {
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setBackgroundColor(Color.BLACK);
+        layout.setPadding(40, 100, 40, 40);
+
         TextView title = new TextView(this);
-        title.setText("Powerful Functions");
-        title.setTextSize(26);
+        title.setText("Enter Playlist URL");
         title.setTextColor(Color.WHITE);
-        title.setPadding(0, 80, 0, 40);
-        title.setGravity(Gravity.CENTER);
-        main.addView(title);
+        title.setTextSize(22);
+        layout.addView(title);
 
-        // SLIDER (strobe feel)
-        SeekBar slider = new SeekBar(this);
-        slider.setMax(10);
-        main.addView(slider);
+        EditText input = new EditText(this);
+        input.setHint("http://example.com/playlist.m3u");
+        input.setTextColor(Color.WHITE);
+        layout.addView(input);
 
-        // COMPASS ICON (fake)
-        TextView compass = new TextView(this);
-        compass.setText("🧭");
-        compass.setTextSize(50);
-        compass.setPadding(0, 40, 0, 40);
-        compass.setGravity(Gravity.CENTER);
-        main.addView(compass);
-
-        // POWER BUTTON
         Button btn = new Button(this);
-        btn.setText("⏻");
-        btn.setTextSize(40);
-        btn.setTextColor(Color.WHITE);
+        btn.setText("LOAD");
+        layout.addView(btn);
 
-        GradientDrawable shape = new GradientDrawable();
-        shape.setShape(GradientDrawable.OVAL);
-        shape.setColor(Color.parseColor("#333333")); // OFF color
-        btn.setBackground(shape);
-
-        LinearLayout.LayoutParams btnParams =
-                new LinearLayout.LayoutParams(350, 350);
-        btnParams.setMargins(0, 40, 0, 40);
-
-        main.addView(btn, btnParams);
-
-        // CAMERA
-        cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        try {
-            cameraId = cameraManager.getCameraIdList()[0];
-        } catch (Exception e) {}
-
-        // BUTTON CLICK
         btn.setOnClickListener(v -> {
-            try {
-                isOn = !isOn;
-                cameraManager.setTorchMode(cameraId, isOn);
+            String url = input.getText().toString();
 
-                if (isOn) {
-                    shape.setColor(Color.parseColor("#00FFAA")); // glow green
-                } else {
-                    shape.setColor(Color.parseColor("#333333"));
-                }
-
-            } catch (Exception e) {}
+            Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+            intent.putExtra("url", url);
+            startActivity(intent);
         });
 
-        // BOTTOM MENU
-        LinearLayout bottom = new LinearLayout(this);
-        bottom.setOrientation(LinearLayout.HORIZONTAL);
-        bottom.setGravity(Gravity.CENTER);
-        bottom.setPadding(0, 80, 0, 40);
-
-        TextView morse = new TextView(this);
-        morse.setText("MORSE");
-        morse.setTextColor(Color.GRAY);
-        morse.setTextSize(16);
-
-        TextView color = new TextView(this);
-        color.setText("COLOR");
-        color.setTextColor(Color.GRAY);
-        color.setTextSize(16);
-        color.setPadding(100, 0, 0, 0);
-
-        bottom.addView(morse);
-        bottom.addView(color);
-
-        main.addView(bottom);
-
-        setContentView(main);
+        setContentView(layout);
     }
 }
