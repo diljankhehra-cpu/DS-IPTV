@@ -2,10 +2,9 @@ package com.dsiptv.app;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.view.View;
+import android.widget.*;
+import android.view.*;
+import android.graphics.*;
 
 import android.hardware.camera2.CameraManager;
 import android.content.Context;
@@ -20,51 +19,90 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Title
+        // MAIN LAYOUT
+        LinearLayout main = new LinearLayout(this);
+        main.setOrientation(LinearLayout.VERTICAL);
+        main.setBackgroundColor(Color.BLACK);
+        main.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+
+        // TITLE
         TextView title = new TextView(this);
         title.setText("Powerful Functions");
-        title.setTextSize(24);
+        title.setTextSize(26);
+        title.setTextColor(Color.WHITE);
+        title.setPadding(0, 80, 0, 40);
+        main.addView(title);
 
-        // Button
+        // SLIDER (fake strobe)
+        SeekBar slider = new SeekBar(this);
+        slider.setMax(10);
+        main.addView(slider);
+
+        // COMPASS (fake)
+        TextView compass = new TextView(this);
+        compass.setText("🧭");
+        compass.setTextSize(50);
+        compass.setPadding(0, 40, 0, 40);
+        main.addView(compass);
+
+        // BUTTON
         Button btn = new Button(this);
-        btn.setText("POWER OFF");
+        btn.setText("⏻");
+        btn.setTextSize(40);
+        btn.setTextColor(Color.WHITE);
 
-        // Camera setup
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.OVAL);
+        shape.setColor(Color.parseColor("#333333"));
+        btn.setBackground(shape);
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(300, 300);
+        params.setMargins(0, 40, 0, 40);
+
+        main.addView(btn, params);
+
+        // CAMERA
         cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             cameraId = cameraManager.getCameraIdList()[0];
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
 
-        // Button click
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    isOn = !isOn;
-                    cameraManager.setTorchMode(cameraId, isOn);
+        // CLICK
+        btn.setOnClickListener(v -> {
+            try {
+                isOn = !isOn;
+                cameraManager.setTorchMode(cameraId, isOn);
 
-                    if (isOn) {
-                        btn.setText("POWER ON 🔦");
-                    } else {
-                        btn.setText("POWER OFF");
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (isOn) {
+                    shape.setColor(Color.parseColor("#00FFAA")); // glow
+                } else {
+                    shape.setColor(Color.parseColor("#333333"));
                 }
-            }
+
+            } catch (Exception e) {}
         });
 
-        // Layout
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(40, 100, 40, 40);
+        // BOTTOM
+        LinearLayout bottom = new LinearLayout(this);
+        bottom.setOrientation(LinearLayout.HORIZONTAL);
+        bottom.setGravity(Gravity.CENTER);
+        bottom.setPadding(0, 80, 0, 40);
 
-        layout.addView(title);
-        layout.addView(btn);
+        TextView morse = new TextView(this);
+        morse.setText("MORSE");
+        morse.setTextColor(Color.GRAY);
 
-        setContentView(layout);
+        TextView color = new TextView(this);
+        color.setText("COLOR");
+        color.setTextColor(Color.GRAY);
+        color.setPadding(100, 0, 0, 0);
+
+        bottom.addView(morse);
+        bottom.addView(color);
+
+        main.addView(bottom);
+
+        setContentView(main);
     }
 }
