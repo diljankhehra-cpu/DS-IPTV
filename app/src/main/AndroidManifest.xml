@@ -1,14 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dsiptv.app">
 
-    <!-- Permissions -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-
-    <!-- Feature (flashlight optional) -->
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
-
     <application
-        android:label="DS IPTV"
+        android:label="DS IPTV">
 
         <activity
             android:name=".MainActivity"
