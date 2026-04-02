@@ -9,7 +9,10 @@ import android.os.Build;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Color;
+import android.view.Gravity;
 
 import android.net.Uri;
 
@@ -45,18 +48,19 @@ public class PlayerActivity extends Activity {
             if (checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.INTERNET}, PERMISSION_REQUEST_CODE);
             } else {
-                initPlayer();
+                initPlayerWithWatermark();
             }
         } else {
-            initPlayer();
+            initPlayerWithWatermark();
         }
     }
 
+    // Handle runtime permission result
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                initPlayer();
+                initPlayerWithWatermark();
             } else {
                 Toast.makeText(this, "Internet permission required", Toast.LENGTH_LONG).show();
                 finish();
@@ -65,17 +69,41 @@ public class PlayerActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    private void initPlayer() {
+    // 🔥 Player + watermark init
+    private void initPlayerWithWatermark() {
+        // ✅ PlayerView programmatically
         PlayerView playerView = new PlayerView(this);
         playerView.setLayoutParams(new FrameLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT
         ));
-        setContentView(playerView);
 
+        // 🔥 Watermark overlay
+        FrameLayout overlay = new FrameLayout(this);
+        overlay.setLayoutParams(new FrameLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
+        ));
+
+        TextView watermark = new TextView(this);
+        watermark.setText("SmartHack IPTV");        // Customize text
+        watermark.setTextColor(Color.RED);          // Color
+        watermark.setTextSize(18);                  // Font size
+        watermark.setGravity(Gravity.TOP | Gravity.RIGHT);
+        watermark.setPadding(0, 20, 20, 0);        // top-right corner
+        overlay.addView(watermark);
+
+        // Combine PlayerView + overlay
+        FrameLayout root = new FrameLayout(this);
+        root.addView(playerView);
+        root.addView(overlay);
+        setContentView(root);
+
+        // ✅ ExoPlayer init
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
 
+        // 🔥 Load M3U in background thread
         new Thread(() -> {
             List<String> urls = loadM3U(M3U_URL);
 
@@ -94,6 +122,7 @@ public class PlayerActivity extends Activity {
                     }
                 }
 
+                // Loop playlist & auto-play first channel
                 player.setRepeatMode(Player.REPEAT_MODE_ALL);
                 player.prepare();
                 player.play();
@@ -101,6 +130,7 @@ public class PlayerActivity extends Activity {
         }).start();
     }
 
+    // 🔥 Simple M3U parser
     private List<String> loadM3U(String urlString) {
         List<String> list = new ArrayList<>();
         try {
