@@ -9,7 +9,6 @@
 
     <application
         android:label="DS IPTV"
-        android:theme="@android:style/Theme.Black.NoTitleBar">
 
         <activity
             android:name=".MainActivity"
