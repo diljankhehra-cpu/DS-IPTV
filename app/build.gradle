@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    // Optional: To suppress namespace warning
+    namespace "com.dsiptv.app"
 }
 
 repositories {
@@ -25,5 +28,12 @@ repositories {
 }
 
 dependencies {
+    // ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
+
+    // AppCompat for backward compatibility
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+
+    // Material Components for Theme.MyApp
+    implementation 'com.google.android.material:material:1.9.0'
 }
