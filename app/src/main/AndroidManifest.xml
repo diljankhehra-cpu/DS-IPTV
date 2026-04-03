@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dsiptv.app">
 
@@ -9,19 +10,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApp">
 
-        <!-- MainActivity -->
-        <activity android:name=".MainActivity">
+        <!-- MainActivity: launcher activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- PlayerActivity -->
-        <activity android:name=".PlayerActivity"
-                  android:screenOrientation="landscape"
-                  android:theme="@style/Theme.MyApp.NoActionBar" />
-                  
+        <!-- PlayerActivity: landscape + NoActionBar theme -->
+        <activity
+            android:name=".PlayerActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.MyApp.NoActionBar"
+            android:exported="false" />
+
     </application>
 
 </manifest>
